@@ -147,6 +147,14 @@ const notifySound = document.getElementById("notifySound");
 const requestsRef = ref(db, 'joinRequests');
 let isInitialLoad = true;
 
+// Helper: Convert stored timestamp to readable format
+function formatTimestamp(ts) {
+  if (!ts) return "N/A";
+  const numTs = typeof ts === "string" ? Number(ts) : ts;
+  if (isNaN(numTs)) return ts; // fallback
+  return new Date(numTs).toLocaleString("en-GB", { timeZone:"Asia/Dhaka" });
+}
+
 // Full list update
 onValue(requestsRef, (snapshot) => {
   const data = snapshot.val();
@@ -163,11 +171,7 @@ onValue(requestsRef, (snapshot) => {
 
   keys.forEach(key => {
     const request = data[key];
-    let formattedTime = "N/A";
-    if (request.timestamp) {
-      formattedTime = new Date(request.timestamp)
-                        .toLocaleString("en-GB", { timeZone:"Asia/Dhaka" });
-    }
+    const formattedTime = formatTimestamp(request.timestamp);
 
     tableBody.innerHTML += `
       <tr>
@@ -236,5 +240,6 @@ window.deleteRequest = function(key){
   setTimeout(() => { if(document.body.contains(popup)) popup.remove(); }, 10000);
 };
 </script>
+
 </body>
 </html>
